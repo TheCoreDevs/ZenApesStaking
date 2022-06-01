@@ -13,8 +13,8 @@ interface IZenToken {
 
 contract ZenStaking {
     
-    uint yieldPerDay;
-    uint40 _requiredStakeTime;
+    uint private yieldPerDay;
+    uint40 private _requiredStakeTime;
     address public owner;
 
     struct StakedToken {
@@ -35,7 +35,32 @@ contract ZenStaking {
         _;
     }
 
-    function setZenApesContractAddr(address _contractAddress) public onlyOwner {
+    constructor (
+        uint yieldAmountPerDay,
+        uint40 requiredStakeTimeInSeconds, 
+        address zenApesContractAddr,
+        address zenTokenContractAddr
+        ) {
+        _setZenApesContractAddr(zenApesContractAddr);
+        _setZenTokenContractAddr(zenTokenContractAddr);
+        yieldPerDay = yieldAmountPerDay;
+        _requiredStakeTime = requiredStakeTimeInSeconds;
+        owner = msg.sender;
+    }
+
+    function setYieldPerDay(uint amount) external onlyOwner {
+        yieldPerDay = amount;
+    }
+    
+    function setRequiredStakeTime(uint40 timeInSeconds) external onlyOwner {
+        _requiredStakeTime = timeInSeconds;
+    }
+
+    function setZenApesContractAddr(address contractAddress) external onlyOwner {
+        _setZenApesContractAddr(contractAddress);
+    }
+
+    function _setZenApesContractAddr(address _contractAddress) private {
         uint256 size;
         assembly {
             size := extcodesize(_contractAddress)
@@ -44,7 +69,11 @@ contract ZenStaking {
         zenApesContract = IERC721(_contractAddress);
     }
 
-    function setZenTokenContractAddr(address _contractAddress) public onlyOwner {
+    function setZenTokenContractAddr(address contractAddress) external onlyOwner {
+        _setZenTokenContractAddr(contractAddress);
+    }
+
+    function _setZenTokenContractAddr(address _contractAddress) private {
         uint256 size;
         assembly {
             size := extcodesize(_contractAddress)
@@ -102,13 +131,13 @@ contract ZenStaking {
         unchecked { secondsSinceLastClaim = block.timestamp - tokenInfo.lastClaimTimestamp; }
 
         if (secondsSinceLastClaim > 86399) {
-            claimAmount = (secondsSinceLastClaim / 86400) * yieldPerDay;
+            claimAmount = (secondsSinceLastClaim * yieldPerDay) / 86400 ;
         } else {
             uint timeStaked = block.timestamp - tokenInfo.stakingTimestamp;
             uint requiredStakeTime = _requiredStakeTime;
 
             require(timeStaked >= requiredStakeTime, "Required stake time not met!");
-            claimAmount = ((timeStaked - requiredStakeTime) / 86400) * yieldPerDay;
+            claimAmount = ((timeStaked - requiredStakeTime) * yieldPerDay) / 86400;
         }
     }
 
@@ -124,6 +153,10 @@ contract ZenStaking {
         require(stakedTokens[uint16(tokenId)].tokenOwner == msg.sender);
         delete stakedTokens[uint16(tokenId)];
         zenApesContract.transferFrom(address(this), msg.sender, tokenId);
+    }
+
+    function getStakingSettings() external view returns (uint, uint40) {
+        return (yieldPerDay, _requiredStakeTime);
     }
 
 }
