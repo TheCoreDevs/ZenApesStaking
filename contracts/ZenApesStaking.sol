@@ -61,11 +61,7 @@ contract ZenStaking {
     }
 
     function _setZenApesContractAddr(address _contractAddress) private {
-        uint256 size;
-        assembly {
-            size := extcodesize(_contractAddress)
-        }
-        require(size > 0, "Not A Contract!");
+        _requireContract(_contractAddress);
         zenApesContract = IERC721(_contractAddress);
     }
 
@@ -74,12 +70,16 @@ contract ZenStaking {
     }
 
     function _setZenTokenContractAddr(address _contractAddress) private {
+        _requireContract(_contractAddress);
+        zenTokenContract = IZenToken(_contractAddress);
+    }
+
+    function _requireContract(address contractAddr) private view {
         uint256 size;
         assembly {
-            size := extcodesize(_contractAddress)
+            size := extcodesize(contractAddr)
         }
         require(size > 0, "Not A Contract!");
-        zenTokenContract = IZenToken(_contractAddress);
     }
 
     /**
