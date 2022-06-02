@@ -118,7 +118,7 @@ contract ZenStaking {
             claimAmount += _getClaimableAmount(tokenInfo);
             stakedTokens[uint16(cId)].lastClaimTimestamp = uint40(block.timestamp);
             
-            unchecked { i++; }
+            unchecked { ++i; }
         }
 
         require(claimAmount > 0, "No claimableTokens!");
