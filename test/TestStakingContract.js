@@ -34,6 +34,8 @@ describe('Staking Test', function () {
     ZenStaking = await ZenStaking.deploy({data: ZenStakingSrc.bytecode, arguments: args}).send({from: accounts[0], gas: 10000000})
 
     await ZenToken.methods.setMinter(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
+
+    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
   })
 
   it('First account should have 10 Zen Apes', async() => {
@@ -52,7 +54,7 @@ describe('Staking Test', function () {
   })
 
   it('can stake single', async() => {
-    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
+    
     await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
     let tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
@@ -62,7 +64,7 @@ describe('Staking Test', function () {
   })
 
   it('can batch stake', async() => {
-    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
+    
     await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 10000000})
     
     let tokenInfo
@@ -119,7 +121,7 @@ describe('Staking Test', function () {
   })
 
   it('can unstake', async() => {
-    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
+    
     let oldOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
 
     await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
@@ -133,7 +135,7 @@ describe('Staking Test', function () {
   })
 
   it('can batch unstake', async() => {
-    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
+    
     let oldOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
 
     await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 10000000})
