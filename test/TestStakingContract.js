@@ -42,9 +42,14 @@ describe('Staking Test', function () {
   })
 
   it('All params are set correctly', async() => {
-    let addresses = ZenStaking.methods.getContractAddresses().call({from: accounts[0]})
+    let addresses = await ZenStaking.methods.getContractAddresses().call({from: accounts[0]})
     assert.equal(addresses.zenApes, ZenApes.options.address)
     assert.equal(addresses.zenToken, ZenToken.options.address)
+
+    let stakingSettings = await ZenStaking.methods.getStakingSettings().call({from: accounts[0]})
+    assert.equal(stakingSettings[0], new BigNumber(1e18)) // yield per day
+    assert.equal(stakingSettings[1], 20) // required stake time
+  })
   })
 
   // it('Test normal withdraw', async() => {
