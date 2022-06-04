@@ -32,6 +32,8 @@ describe('Staking Test', function () {
     let args = [new BigNumber(1e18), 20, ZenApes.options.address, ZenToken.options.address]
 
     ZenStaking = await ZenStaking.deploy({data: ZenStakingSrc.bytecode, arguments: args}).send({from: accounts[0], gas: 10000000})
+
+    await ZenToken.methods.setMinter(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
   })
 
   it('First account should have 10 Zen Apes', async() => {
