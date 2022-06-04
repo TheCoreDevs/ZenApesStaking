@@ -2,9 +2,10 @@
 
 pragma solidity 0.8.7;
 
-interface IERC721 {
+interface IZenApes {
     function ownerOf(uint256 _tokenId) external view returns (address);
     function transferFrom(address _from, address _to, uint256 _tokenId) external;
+    function multiTransferFrom(address from_, address to_, uint256[] memory tokenIds_) external;
 }
 
 interface IZenToken {
@@ -27,7 +28,7 @@ contract ZenStaking {
 
     mapping(uint16 => StakedToken) private stakedTokens;
     
-    IERC721 zenApesContract;
+    IZenApes zenApesContract;
     IZenToken zenTokenContract;
 
     modifier onlyOwner() {
@@ -62,7 +63,7 @@ contract ZenStaking {
 
     function _setZenApesContractAddr(address _contractAddress) private {
         _requireContract(_contractAddress);
-        zenApesContract = IERC721(_contractAddress);
+        zenApesContract = IZenApes(_contractAddress);
     }
 
     function setZenTokenContractAddr(address contractAddress) external onlyOwner {
@@ -149,10 +150,46 @@ contract ZenStaking {
         zenApesContract.transferFrom(msg.sender, address(this), tokenId);
     }
 
+    function stakeBatch(uint[] memory tokenIds) external {
+        uint amount = tokenIds.length;
+        uint cId;
+        for(uint i; i < amount;) {
+
+            assembly {
+                cId := mload(add(add(tokenIds, 0x20), mul(i, 0x20)))
+            }
+
+            require(zenApesContract.ownerOf(cId) == msg.sender);
+            stakedTokens[uint16(cId)].stakingTimestamp = uint40(block.timestamp);
+            stakedTokens[uint16(cId)].tokenOwner = msg.sender;
+
+            unchecked { ++i; }
+        }
+        zenApesContract.multiTransferFrom(msg.sender, address(this), tokenIds);
+    }
+
     function ustake(uint tokenId) external {
         require(stakedTokens[uint16(tokenId)].tokenOwner == msg.sender);
         delete stakedTokens[uint16(tokenId)];
         zenApesContract.transferFrom(address(this), msg.sender, tokenId);
+    }
+
+    function ustakeBatch(uint[] memory tokenIds) external {
+        uint amount = tokenIds.length;
+        uint cId;
+        for(uint i; i < amount;) {
+
+            assembly {
+                cId := mload(add(add(tokenIds, 0x20), mul(i, 0x20)))
+            }
+
+            require(stakedTokens[uint16(cId)].tokenOwner == msg.sender);
+            delete stakedTokens[uint16(cId)];
+
+            unchecked { ++i; }
+        }
+        
+        zenApesContract.multiTransferFrom(address(this), msg.sender, tokenIds);
     }
 
     function getStakingSettings() external view returns (uint, uint40) {
