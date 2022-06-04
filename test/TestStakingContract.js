@@ -157,4 +157,36 @@ describe('Staking Test', function () {
     assert.equal(ZenStaking.options.address, newOwner)
   })
 
+  it('can change addresses and settings', async() => {
+    await ZenStaking.methods.setYieldPerDay(new BigNumber(5e18)).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.setRequiredStakeTime(100).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.setZenTokenContractAddr(ZenStaking.options.address).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.setZenApesContractAddr(ZenStaking.options.address).send({from: accounts[0], gas: 10000000})
+
+    let addresses = await ZenStaking.methods.getContractAddresses().call({from: accounts[0]})
+    assert.equal(addresses.zenApes, ZenStaking.options.address)
+    assert.equal(addresses.zenToken, ZenStaking.options.address)
+
+    let stakingSettings = await ZenStaking.methods.getStakingSettings().call({from: accounts[0]})
+    assert.equal(stakingSettings[0], new BigNumber(5e18)) // yield per day
+    assert.equal(stakingSettings[1], 100) // required stake time
+  })
+
+  it('disallow non contract addressese to be set', async() => {
+    // await ZenStaking.methods.setZenTokenContractAddr(accounts[0]).send({from: accounts[0], gas: 10000000})
+    try {
+      await ZenStaking.methods.setZenApesContractAddr(accounts[0]).send({from: accounts[0], gas: 10000000})
+      throw('cannot reach this')
+    } catch (e) {
+      assert(e.message.includes('revert'))
+    }
+
+    try {
+      await ZenStaking.methods.setZenTokenContractAddr(accounts[0]).send({from: accounts[0], gas: 10000000})
+      throw('cannot reach this')
+    } catch (e) {
+      assert(e.message.includes('revert'))
+    }
+  })
+
 })
