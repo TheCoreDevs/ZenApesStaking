@@ -92,6 +92,14 @@ describe('Staking Test', function () {
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(10).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+
+  it('can unstake', async() => {
+    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
+    let tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
+    assert.equal(tokenInfo.tokenOwner, accounts[0])
+
+    await ZenStaking.methods.unstake(1).send({from: accounts[0], gas: 10000000})
   })
 
 })
