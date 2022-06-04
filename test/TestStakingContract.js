@@ -129,4 +129,16 @@ describe('Staking Test', function () {
     assert.equal(oldOwner, newOwner)
   })
 
+  it('can batch unstake', async() => {
+    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
+    let oldOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
+
+    await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.unstake(1).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.unstakeBatch([2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 10000000})
+
+    let newOwner = await ZenApes.methods.ownerOf(2).call({from: accounts[0]})
+    assert.equal(oldOwner, newOwner)
+  })
+
 })
