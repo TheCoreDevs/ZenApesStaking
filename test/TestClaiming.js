@@ -2,6 +2,7 @@ const Web3 = require('web3')
 const chai = require('chai')
 const assert = chai.assert
 const BigNumber = require('bignumber.js')
+const { time } = require("@openzeppelin/test-helpers");
 
 const ZenStakingSrc = require('../build/contracts/ZenStaking.json')
 const ZenApesSrc = require('../build/contracts/ZenApes.json')
@@ -9,6 +10,8 @@ const ZenTokenSrc = require('../build/contracts/ZenToken.json')
 
 const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'))
 web3.transactionConfirmationBlocks = 1;
+
+const day = 86400
 
 function range(start, end) {
     return Array(end - start + 1).fill().map((_, idx) => start + idx)
@@ -33,7 +36,7 @@ describe('claiming Test', function () {
   
       ZenToken = await ZenToken.deploy({data: ZenTokenSrc.bytecode}).send({from: accounts[0], gas: 10000000})
   
-      let args = [new BigNumber(1e18), 60, ZenApes.options.address, ZenToken.options.address]
+      let args = [new BigNumber(1e18), 30 * day, ZenApes.options.address, ZenToken.options.address]
   
       ZenStaking = await ZenStaking.deploy({data: ZenStakingSrc.bytecode, arguments: args}).send({from: accounts[0], gas: 10000000})
   
@@ -44,8 +47,11 @@ describe('claiming Test', function () {
       await ZenStaking.methods.stakeBatch(range(1, 30)).send({from: accounts[0], gas: 10000000})
     })
 
-    it('get gas amount', async() => {
-        assert.equal(1,1)
+    it('should get enough tokens on initial withdraw', async() => {
+      await time.increase(35 * day)
+      await ZenStaking.methods.claim(1).send({from: accounts[0], gas: 10000000})
+      let bal = await ZenToken.methods.balanceOf(accounts[0]).call({from: accounts[0]})
+      assert.equal(bal, 5e18)
     })
   
   })
