@@ -161,13 +161,13 @@ contract ZenStaking {
         zenApesContract.multiTransferFrom(msg.sender, address(this), tokenIds);
     }
 
-    function ustake(uint tokenId) external {
+    function unstake(uint tokenId) external {
         require(stakedTokens[uint16(tokenId)].tokenOwner == msg.sender);
         delete stakedTokens[uint16(tokenId)];
         zenApesContract.transferFrom(address(this), msg.sender, tokenId);
     }
 
-    function ustakeBatch(uint[] memory tokenIds) external {
+    function unstakeBatch(uint[] memory tokenIds) external {
         uint amount = tokenIds.length;
         uint cId;
         for(uint i; i < amount;) {
