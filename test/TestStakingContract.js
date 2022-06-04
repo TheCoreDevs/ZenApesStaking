@@ -54,7 +54,7 @@ describe('Staking Test', function () {
   })
 
   it('can stake single', async() => {
-    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 95936})
     let tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
 
@@ -63,7 +63,7 @@ describe('Staking Test', function () {
   })
 
   it('can batch stake', async() => {
-    await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 439591})
     
     let tokenInfo
     let newOwner
