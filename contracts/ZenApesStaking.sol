@@ -115,23 +115,24 @@ contract ZenStaking {
             unchecked { ++i; }
         }
 
-        require(claimAmount > 0, "No claimableTokens!");
-
         zenTokenContract.mintAsController(msg.sender, claimAmount);
     }
 
     function _getClaimableAmount(StakedToken memory tokenInfo) private view returns(uint claimAmount) {
-        uint secondsSinceLastClaim;
-        unchecked { secondsSinceLastClaim = block.timestamp - tokenInfo.lastClaimTimestamp; }
 
-        if (secondsSinceLastClaim > 86399) {
-            claimAmount = (secondsSinceLastClaim * yieldPerDay) / 86400 ;
-        } else {
-            uint timeStaked = block.timestamp - tokenInfo.stakingTimestamp;
+        if (tokenInfo.lastClaimTimestamp == 0) {
+            uint timeStaked;
+            unchecked { timeStaked = block.timestamp - tokenInfo.stakingTimestamp; }
             uint requiredStakeTime = _requiredStakeTime;
 
             require(timeStaked >= requiredStakeTime, "Required stake time not met!");
-            claimAmount = ((timeStaked - requiredStakeTime) * yieldPerDay) / 86400;
+            claimAmount = ((timeStaked - requiredStakeTime) / 86400) * yieldPerDay ;
+        } else {
+            uint secondsSinceLastClaim;
+            unchecked { secondsSinceLastClaim = block.timestamp - tokenInfo.lastClaimTimestamp; }
+            require(secondsSinceLastClaim > 86399, "Cannot cliam zero tokens!");
+
+            claimAmount = (secondsSinceLastClaim / 86400) * yieldPerDay ;
         }
     }
 
