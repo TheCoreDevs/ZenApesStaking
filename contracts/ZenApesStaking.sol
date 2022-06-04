@@ -83,11 +83,8 @@ contract ZenStaking {
         require(size > 0, "Not A Contract!");
     }
 
-    /**
-     * @dev getter function to get the last claim timestamp for a specific wolf ID
-     */
-    function getLastClaimTimestamp(uint16 id) external view returns(uint64) {
-        return stakedTokens[id].lastClaimTimestamp;
+    function getTokenInfo(uint16 id) external view returns(uint40 stakingTimestamp, uint40 lastClaimTimestamp, address tokenOwner) {
+        return (stakedTokens[id].stakingTimestamp, stakedTokens[id].lastClaimTimestamp, stakedTokens[id].tokenOwner);
     }
 
     function claim(uint tokenId) external {
