@@ -54,7 +54,6 @@ describe('Staking Test', function () {
   })
 
   it('can stake single', async() => {
-    
     await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
     let tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
@@ -64,7 +63,6 @@ describe('Staking Test', function () {
   })
 
   it('can batch stake', async() => {
-    
     await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 10000000})
     
     let tokenInfo
@@ -121,7 +119,6 @@ describe('Staking Test', function () {
   })
 
   it('can unstake', async() => {
-    
     let oldOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
 
     await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
@@ -135,7 +132,6 @@ describe('Staking Test', function () {
   })
 
   it('can batch unstake', async() => {
-    
     let oldOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
 
     await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 10000000})
@@ -147,6 +143,18 @@ describe('Staking Test', function () {
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(10).call({from: accounts[0]})
     assert.equal(tokenInfo.stakingTimestamp, 0)
+  })
+
+  it('can stake again', async() => {
+    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.unstake(1).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
+
+    let tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
+    assert.equal(tokenInfo.tokenOwner, accounts[0])
+
+    let newOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
   })
 
 })
