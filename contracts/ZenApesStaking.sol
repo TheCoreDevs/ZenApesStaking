@@ -89,7 +89,7 @@ contract ZenStaking {
 
         uint claimAmount = _getClaimableAmount(tokenInfo);
 
-        require(claimAmount > 0, "No claimableTokens!");
+        require(claimAmount > 0, "No claimable Tokens!");
 
         stakedTokens[uint16(tokenId)].lastClaimTimestamp = uint40(block.timestamp);
         zenTokenContract.mintAsController(msg.sender, claimAmount);
