@@ -196,4 +196,8 @@ contract ZenStaking {
         return (yieldPerDay, _requiredStakeTime);
     }
 
+    function getContractAddresses() external view returns(address zenApes, address zenToken) {
+        return(address(zenApesContract), address(zenTokenContract));
+    }
+
 }
