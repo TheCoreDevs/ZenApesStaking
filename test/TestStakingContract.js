@@ -127,6 +127,9 @@ describe('Staking Test', function () {
 
     let newOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
     assert.equal(oldOwner, newOwner)
+
+    tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
+    assert.equal(tokenInfo.stakingTimestamp, 0)
   })
 
   it('can batch unstake', async() => {
@@ -139,6 +142,9 @@ describe('Staking Test', function () {
 
     let newOwner = await ZenApes.methods.ownerOf(2).call({from: accounts[0]})
     assert.equal(oldOwner, newOwner)
+
+    tokenInfo = await ZenStaking.methods.getTokenInfo(10).call({from: accounts[0]})
+    assert.equal(tokenInfo.stakingTimestamp, 0)
   })
 
 })
