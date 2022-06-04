@@ -192,14 +192,14 @@ describe('Staking Test', function () {
   it('disallow non owner to stake', async() => {
     
     try {
-      await await ZenStaking.methods.stake(1).send({from: accounts[1], gas: 10000000})
+      await ZenStaking.methods.stake(1).send({from: accounts[1], gas: 10000000})
       throw('cannot reach this')
     } catch (e) {
       assert(e.message.includes('revert'))
     }
 
     try {
-      await await ZenStaking.methods.stakeBatch([2, 3, 4, 5]).send({from: accounts[1], gas: 10000000})
+      await ZenStaking.methods.stakeBatch([2, 3, 4, 5]).send({from: accounts[1], gas: 10000000})
       throw('cannot reach this')
     } catch (e) {
       assert(e.message.includes('revert'))
@@ -207,19 +207,19 @@ describe('Staking Test', function () {
   })
 
   it('disallow non owner to unstake', async() => {
-    await await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
 
     try {
-      await await ZenStaking.methods.unstake(1).send({from: accounts[1], gas: 10000000})
+      await ZenStaking.methods.unstake(1).send({from: accounts[1], gas: 10000000})
       throw('cannot reach this')
     } catch (e) {
       assert(e.message.includes('revert'))
     }
 
-    await await ZenStaking.methods.stakeBatch([2, 3, 4, 5]).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.stakeBatch([2, 3, 4, 5]).send({from: accounts[0], gas: 10000000})
 
     try {
-      await await ZenStaking.methods.unstakeBatch([2, 3, 4, 5]).send({from: accounts[1], gas: 10000000})
+      await ZenStaking.methods.unstakeBatch([2, 3, 4, 5]).send({from: accounts[1], gas: 10000000})
       throw('cannot reach this')
     } catch (e) {
       assert(e.message.includes('revert'))
