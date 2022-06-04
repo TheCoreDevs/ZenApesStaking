@@ -83,10 +83,6 @@ contract ZenStaking {
         require(size > 0, "Not A Contract!");
     }
 
-    function getTokenInfo(uint16 id) external view returns(uint40 stakingTimestamp, uint40 lastClaimTimestamp, address tokenOwner) {
-        return (stakedTokens[id].stakingTimestamp, stakedTokens[id].lastClaimTimestamp, stakedTokens[id].tokenOwner);
-    }
-
     function claim(uint tokenId) external {
         StakedToken memory tokenInfo = stakedTokens[uint16(tokenId)];
         require(tokenInfo.tokenOwner == msg.sender, "Caller is not token owner!");
@@ -187,6 +183,11 @@ contract ZenStaking {
         }
         
         zenApesContract.multiTransferFrom(address(this), msg.sender, tokenIds);
+    }
+
+
+    function getTokenInfo(uint16 id) external view returns(uint40 stakingTimestamp, uint40 lastClaimTimestamp, address tokenOwner) {
+        return (stakedTokens[id].stakingTimestamp, stakedTokens[id].lastClaimTimestamp, stakedTokens[id].tokenOwner);
     }
 
     function getStakingSettings() external view returns (uint, uint40) {
