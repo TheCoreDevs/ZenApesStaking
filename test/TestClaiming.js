@@ -87,7 +87,6 @@ describe('claiming Test', function () {
 
       let bal = await ZenToken.methods.balanceOf(accounts[0]).call({from: accounts[0]})
       assert.equal(bal, 3 * 7e18)
-      
     })
   
   })
