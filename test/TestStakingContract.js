@@ -50,6 +50,12 @@ describe('Staking Test', function () {
     assert.equal(stakingSettings[0], new BigNumber(1e18)) // yield per day
     assert.equal(stakingSettings[1], 20) // required stake time
   })
+
+  it('can stake single', async() => {
+    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
+    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
+    let tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
+    assert.equal(tokenInfo.tokenOwner, accounts[0])
   })
 
   // it('Test normal withdraw', async() => {
