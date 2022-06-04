@@ -53,5 +53,41 @@ describe('claiming Test', function () {
       let bal = await ZenToken.methods.balanceOf(accounts[0]).call({from: accounts[0]})
       assert.equal(bal, 5e18)
     })
+
+    it('should get enough tokens on second withdraw', async() => {
+      await time.increase(35 * day)
+      await ZenStaking.methods.claim(1).send({from: accounts[0], gas: 10000000})
+
+      await time.increase(2 * day)
+
+      await ZenStaking.methods.claim(1).send({from: accounts[0], gas: 10000000})
+      let bal = await ZenToken.methods.balanceOf(accounts[0]).call({from: accounts[0]})
+      
+      assert.equal(bal, 7e18)
+    })
+
+    it('should batch claim', async() => {
+      await time.increase(35 * day)
+      await ZenStaking.methods.batchClaim([1,2,3]).send({from: accounts[0], gas: 10000000})
+
+      let bal = await ZenToken.methods.balanceOf(accounts[0]).call({from: accounts[0]})
+      assert.equal(bal, 3 * 5e18)
+      
+    })
+
+    it('should batch claim 2', async() => {
+      await time.increase(35 * day)
+      await ZenStaking.methods.claim(1).send({from: accounts[0], gas: 10000000})
+
+      await time.increase(day)
+      await ZenStaking.methods.claim(2).send({from: accounts[0], gas: 10000000})
+
+      await time.increase(day)
+      await ZenStaking.methods.batchClaim([1,2,3]).send({from: accounts[0], gas: 10000000})
+
+      let bal = await ZenToken.methods.balanceOf(accounts[0]).call({from: accounts[0]})
+      assert.equal(bal, 3 * 7e18)
+      
+    })
   
   })
