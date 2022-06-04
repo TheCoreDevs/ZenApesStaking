@@ -88,5 +88,40 @@ describe('claiming Test', function () {
       let bal = await ZenToken.methods.balanceOf(accounts[0]).call({from: accounts[0]})
       assert.equal(bal, 3 * 7e18)
     })
+
+    it('revert on claiming before staked for minimum time', async() => {
+      try {
+        await ZenStaking.methods.claim(1).send({from: accounts[0], gas: 10000000})
+        throw('cannot reach this')
+      } catch (e) {
+        assert(e.message.includes('revert'))
+      }
+
+      try {
+        await ZenStaking.methods.batchClaim([2,3]).send({from: accounts[0], gas: 10000000})
+        throw('cannot reach this')
+      } catch (e) {
+        assert(e.message.includes('revert'))
+      }
+    })
+
+    it('revert on claiming before staked for minimum time 2', async() => {
+      await time.increase(35 * day)
+      await ZenStaking.methods.claim(1).send({from: accounts[0], gas: 10000000})
+
+      try {
+        await ZenStaking.methods.claim(1).send({from: accounts[0], gas: 10000000})
+        throw('cannot reach this')
+      } catch (e) {
+        assert(e.message.includes('revert'))
+      }
+
+      try {
+        await ZenStaking.methods.batchClaim([1,2,3]).send({from: accounts[0], gas: 10000000})
+        throw('cannot reach this')
+      } catch (e) {
+        assert(e.message.includes('revert'))
+      }
+    })
   
   })
