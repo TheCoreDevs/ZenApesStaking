@@ -120,11 +120,13 @@ describe('Staking Test', function () {
 
   it('can unstake', async() => {
     await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
-    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
-    let tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
-    assert.equal(tokenInfo.tokenOwner, accounts[0])
+    let oldOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
 
+    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
     await ZenStaking.methods.unstake(1).send({from: accounts[0], gas: 10000000})
+
+    let newOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
+    assert.equal(oldOwner, newOwner)
   })
 
 })
