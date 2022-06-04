@@ -56,6 +56,9 @@ describe('Staking Test', function () {
     await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 10000000})
     let tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+
+    let newOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
   })
 
   it('can batch stake', async() => {
@@ -63,35 +66,57 @@ describe('Staking Test', function () {
     await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 10000000})
     
     let tokenInfo
+    let newOwner
     tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(2).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(2).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(3).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(3).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(4).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(4).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
     
     tokenInfo = await ZenStaking.methods.getTokenInfo(5).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(5).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(6).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(6).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(7).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(7).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(8).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(8).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(9).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(9).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
 
     tokenInfo = await ZenStaking.methods.getTokenInfo(10).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
+    newOwner = await ZenApes.methods.ownerOf(10).call({from: accounts[0]})
+    assert.equal(ZenStaking.options.address, newOwner)
+  })
 
   it('can unstake', async() => {
     await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[0], gas: 10000000})
