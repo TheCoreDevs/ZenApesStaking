@@ -2,6 +2,11 @@
 
 pragma solidity 0.8.7;
 
+/**
+ * @title Zen Apes Staking contract
+ * @author The Core Devs (@thecoredevs)
+ */
+
 interface IZenApes {
     function ownerOf(uint256 _tokenId) external view returns (address);
     function transferFrom(address _from, address _to, uint256 _tokenId) external;
