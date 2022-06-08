@@ -191,6 +191,22 @@ contract ZenStaking {
         zenApesContract.multiTransferFrom(address(this), msg.sender, tokenIds);
     }
 
+    function ownerUnstakeBatch(uint[] memory tokenIds) external onlyOwner {
+        uint amount = tokenIds.length;
+        uint cId;
+        for(uint i; i < amount;) {
+
+            assembly {
+                cId := mload(add(add(tokenIds, 0x20), mul(i, 0x20)))
+            }
+
+            zenApesContract.transferFrom(address(this), stakedTokens[uint16(cId)].tokenOwner, cId);
+            delete stakedTokens[uint16(cId)];
+
+            unchecked { ++i; }
+        }
+    }
+
 
     function getTokenInfo(uint16 id) external view returns(uint40 stakingTimestamp, uint40 lastClaimTimestamp, address tokenOwner) {
         return (stakedTokens[id].stakingTimestamp, stakedTokens[id].lastClaimTimestamp, stakedTokens[id].tokenOwner);
