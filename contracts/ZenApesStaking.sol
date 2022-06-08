@@ -17,7 +17,7 @@ interface IZenToken {
     function mintAsController(address to_, uint256 amount_) external;
 }
 
-contract ZenStaking {
+contract ZenStakingV1 {
     
     uint private yieldPerDay;
     uint40 private _requiredStakeTime;
