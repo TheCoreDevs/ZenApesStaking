@@ -212,6 +212,21 @@ contract ZenStakingV1 {
         return (stakedTokens[id].stakingTimestamp, stakedTokens[id].lastClaimTimestamp, stakedTokens[id].tokenOwner);
     }
 
+    function getUserTokenInfo(address user) external view returns(uint40[] memory stakingTimestamp, uint40[] memory lastClaimTimestamp, uint[] memory tokenIds) {
+        uint x;
+        StakedToken memory st;
+        for(uint i = 1; i < 5001;) {
+            st = stakedTokens[uint16(i)];
+            if(st.tokenOwner == user) {
+                stakingTimestamp[x] = st.stakingTimestamp;
+                lastClaimTimestamp[x] = st.lastClaimTimestamp;
+                tokenIds[x] = i;
+                unchecked { ++x; }
+            }
+            unchecked { ++i; }
+        }
+    }
+
     function getStakingSettings() external view returns (uint, uint40) {
         return (yieldPerDay, _requiredStakeTime);
     }
