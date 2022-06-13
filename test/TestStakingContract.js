@@ -3,7 +3,7 @@ const chai = require('chai')
 const assert = chai.assert
 const BigNumber = require('bignumber.js')
 
-const ZenStakingSrc = require('../build/contracts/ZenStaking.json')
+const ZenStakingSrc = require('../build/contracts/ZenStakingV1.json')
 const ZenApesSrc = require('../build/contracts/ZenApes.json')
 const ZenTokenSrc = require('../build/contracts/ZenToken.json')
 
@@ -63,7 +63,7 @@ describe('Staking Test', function () {
   })
 
   it('can batch stake', async() => {
-    await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 439591})//////////////////// 
+    await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 1000000})//////////////////// 
     
     let tokenInfo
     let newOwner
@@ -134,9 +134,9 @@ describe('Staking Test', function () {
   it('can batch unstake', async() => {
     let oldOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
 
-    await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 439591})
+    await ZenStaking.methods.stakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 1000000}) // 439591
     // await ZenStaking.methods.unstake(1).send({from: accounts[0], gas: 10000000})
-    await ZenStaking.methods.unstakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 248031}) ///////////////
+    await ZenStaking.methods.unstakeBatch([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).send({from: accounts[0], gas: 300000}) ///////////////
 
     let newOwner = await ZenApes.methods.ownerOf(2).call({from: accounts[0]})
     assert.equal(oldOwner, newOwner)
@@ -225,5 +225,49 @@ describe('Staking Test', function () {
       assert(e.message.includes('revert'))
     }
   })
+
+  it('contract owner can unstake batch', async() => {
+    
+    await ZenApes.methods.transferFrom(accounts[0], accounts[1], 1).send({from: accounts[0], gas: 1000000})
+    let oldOwner1 = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
+    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[1], gas: 10000000})
+    await ZenStaking.methods.stake(1).send({from: accounts[1], gas: 1000000})
+
+
+    await ZenApes.methods.transferFrom(accounts[0], accounts[2], 2).send({from: accounts[0], gas: 1000000})
+    let oldOwner2 = await ZenApes.methods.ownerOf(2).call({from: accounts[0]})
+    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[2], gas: 10000000})
+    await ZenStaking.methods.stake(2).send({from: accounts[2], gas: 1000000})
+
+    await ZenApes.methods.transferFrom(accounts[0], accounts[3], 3).send({from: accounts[0], gas: 1000000})
+    let oldOwner3 = await ZenApes.methods.ownerOf(3).call({from: accounts[0]})
+    await ZenApes.methods.setApprovalForAll(ZenStaking.options.address, true).send({from: accounts[3], gas: 10000000})
+    await ZenStaking.methods.stake(3).send({from: accounts[3], gas: 1000000})
+
+    await ZenStaking.methods.ownerUnstakeBatch([1, 2, 3]).send({from: accounts[0], gas: 1000000})
+
+    let newOwner1 = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
+    assert.equal(oldOwner1, newOwner1)
+    let newOwner2 = await ZenApes.methods.ownerOf(2).call({from: accounts[0]})
+    assert.equal(oldOwner2, newOwner2)
+    let newOwner3 = await ZenApes.methods.ownerOf(3).call({from: accounts[0]})
+    assert.equal(oldOwner3, newOwner3)
+
+    // assert(ids == info.tokenIds, "arrays don't match")
+  })
+
+  it('can get user token info', async() => {
+
+    let ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    // ids = [1, 2]
+    await ZenStaking.methods.stakeBatch(ids).send({from: accounts[0], gas: 1000000})
+
+    // await ZenStaking.methods.getUserTokenInfo(accounts[0]).call({from: accounts[0]})
+    let info = await ZenStaking.methods.getUserTokenInfo(accounts[0]).call({from: accounts[0]})
+
+    assert(ids == info.tokenIds, "arrays don't match")
+  })
+
+
 
 })
