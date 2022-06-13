@@ -9,6 +9,7 @@ pragma solidity 0.8.7;
 
 interface IZenApes {
     function ownerOf(uint256 _tokenId) external view returns (address);
+    function balanceOf(address owner) external view returns (uint256 balance);
     function transferFrom(address _from, address _to, uint256 _tokenId) external;
     function multiTransferFrom(address from_, address to_, uint256[] memory tokenIds_) external;
 }
@@ -32,6 +33,7 @@ contract ZenStakingV1 {
     // seconds in 24 hours: 86400
 
     mapping(uint16 => StakedToken) private stakedTokens;
+    mapping(address => uint) public stakedTokensAmount;
     
     IZenApes zenApesContract;
     IZenToken zenTokenContract;
@@ -146,6 +148,7 @@ contract ZenStakingV1 {
         require(zenApesContract.ownerOf(tokenId) == msg.sender);
         stakedTokens[uint16(tokenId)].stakingTimestamp = uint40(block.timestamp);
         stakedTokens[uint16(tokenId)].tokenOwner = msg.sender;
+        unchecked { ++stakedTokensAmount[msg.sender]; }
         zenApesContract.transferFrom(msg.sender, address(this), tokenId);
     }
 
@@ -162,7 +165,10 @@ contract ZenStakingV1 {
             stakedTokens[uint16(cId)].stakingTimestamp = uint40(block.timestamp);
             stakedTokens[uint16(cId)].tokenOwner = msg.sender;
 
-            unchecked { ++i; }
+            unchecked {
+                ++stakedTokensAmount[msg.sender];
+                ++i;
+            }
         }
         zenApesContract.multiTransferFrom(msg.sender, address(this), tokenIds);
     }
@@ -170,6 +176,7 @@ contract ZenStakingV1 {
     function unstake(uint tokenId) external {
         require(stakedTokens[uint16(tokenId)].tokenOwner == msg.sender);
         delete stakedTokens[uint16(tokenId)];
+        unchecked { --stakedTokensAmount[msg.sender]; }
         zenApesContract.transferFrom(address(this), msg.sender, tokenId);
     }
 
@@ -185,7 +192,10 @@ contract ZenStakingV1 {
             require(stakedTokens[uint16(cId)].tokenOwner == msg.sender);
             delete stakedTokens[uint16(cId)];
 
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+                --stakedTokensAmount[msg.sender]; 
+            }
         }
         
         zenApesContract.multiTransferFrom(address(this), msg.sender, tokenIds);
@@ -203,7 +213,10 @@ contract ZenStakingV1 {
             zenApesContract.transferFrom(address(this), stakedTokens[uint16(cId)].tokenOwner, cId);
             delete stakedTokens[uint16(cId)];
 
-            unchecked { ++i; }
+            unchecked {
+                ++i;
+                --stakedTokensAmount[msg.sender]; 
+            }
         }
     }
 
@@ -212,10 +225,17 @@ contract ZenStakingV1 {
         return (stakedTokens[id].stakingTimestamp, stakedTokens[id].lastClaimTimestamp, stakedTokens[id].tokenOwner);
     }
 
-    function getUserTokenInfo(address user) external view returns(uint40[] memory stakingTimestamp, uint40[] memory lastClaimTimestamp, uint[] memory tokenIds) {
+    function getUserTokenInfo(address user) external view returns(uint[] memory stakingTimestamp, uint[] memory lastClaimTimestamp, uint[] memory tokenIds) {
         uint x;
+        uint tokenAmount = zenApesContract.balanceOf(address(this));
+        uint stakedAmount = stakedTokensAmount[user];
         StakedToken memory st;
-        for(uint i = 1; i < 5001;) {
+
+        stakingTimestamp = new uint[](stakedAmount);
+        lastClaimTimestamp = new uint[](stakedAmount);
+        tokenIds = new uint[](stakedAmount);
+
+        for(uint i = 1; i < tokenAmount;) {
             st = stakedTokens[uint16(i)];
             if(st.tokenOwner == user) {
                 stakingTimestamp[x] = st.stakingTimestamp;
