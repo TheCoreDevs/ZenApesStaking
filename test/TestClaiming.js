@@ -4,7 +4,7 @@ const assert = chai.assert
 const BigNumber = require('bignumber.js')
 const { time } = require("@openzeppelin/test-helpers");
 
-const ZenStakingSrc = require('../build/contracts/ZenStaking.json')
+const ZenStakingSrc = require('../build/contracts/ZenStakingV1.json')
 const ZenApesSrc = require('../build/contracts/ZenApes.json')
 const ZenTokenSrc = require('../build/contracts/ZenToken.json')
 
