@@ -227,7 +227,8 @@ contract ZenStakingV1 {
 
     function getUserTokenInfo(address user) external view returns(uint[] memory stakingTimestamp, uint[] memory lastClaimTimestamp, uint[] memory tokenIds) {
         uint x;
-        uint tokenAmount = zenApesContract.balanceOf(address(this));
+        // uint tokenAmount = zenApesContract.balanceOf(address(this));
+        // uint tokenAmount = 5000;
         uint stakedAmount = stakedTokensAmount[user];
         StakedToken memory st;
 
@@ -235,7 +236,7 @@ contract ZenStakingV1 {
         lastClaimTimestamp = new uint[](stakedAmount);
         tokenIds = new uint[](stakedAmount);
 
-        for(uint i = 1; i < tokenAmount;) {
+        for(uint i = 1; i < 5001;) {
             st = stakedTokens[uint16(i)];
             if(st.tokenOwner == user) {
                 stakingTimestamp[x] = st.stakingTimestamp;
