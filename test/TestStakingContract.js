@@ -54,7 +54,7 @@ describe('Staking Test', function () {
   })
 
   it('can stake single', async() => {
-    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 95936}) //////////////////////
+    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 1000000}) //////////////////////
     let tokenInfo = await ZenStaking.methods.getTokenInfo(1).call({from: accounts[0]})
     assert.equal(tokenInfo.tokenOwner, accounts[0])
 
@@ -121,8 +121,8 @@ describe('Staking Test', function () {
   it('can unstake', async() => {
     let oldOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
 
-    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 95936})
-    await ZenStaking.methods.unstake(1).send({from: accounts[0], gas: 58000}) /////////////
+    await ZenStaking.methods.stake(1).send({from: accounts[0], gas: 1000000})
+    await ZenStaking.methods.unstake(1).send({from: accounts[0], gas: 1000000}) /////////////
 
     let newOwner = await ZenApes.methods.ownerOf(1).call({from: accounts[0]})
     assert.equal(oldOwner, newOwner)
@@ -264,6 +264,7 @@ describe('Staking Test', function () {
 
     // await ZenStaking.methods.getUserTokenInfo(accounts[0]).call({from: accounts[0]})
     let info = await ZenStaking.methods.getUserTokenInfo(accounts[0]).call({from: accounts[0]})
+    console.log(info)
 
     assert(ids == info.tokenIds, "arrays don't match")
   })
