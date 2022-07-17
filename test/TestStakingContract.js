@@ -6,6 +6,8 @@ const BigNumber = require('bignumber.js')
 const ZenStakingSrc = require('../build/contracts/ZenStakingV1.json')
 const ZenApesSrc = require('../build/contracts/ZenApes.json')
 const ZenTokenSrc = require('../build/contracts/ZenToken.json')
+const { time } = require("@openzeppelin/test-helpers");
+
 
 const web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:8545'))
 web3.transactionConfirmationBlocks = 1;
@@ -260,7 +262,10 @@ describe('Staking Test', function () {
 
     let ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     // ids = [1, 2]
-    await ZenStaking.methods.stakeBatch(ids).send({from: accounts[0], gas: 1000000})
+    await ZenStaking.methods.stakeBatch([1,2,3]).send({from: accounts[0], gas: 1000000})
+    time.increase(1000)
+    await ZenStaking.methods.stakeBatch([4,5,6]).send({from: accounts[0], gas: 1000000})
+
 
     // await ZenStaking.methods.getUserTokenInfo(accounts[0]).call({from: accounts[0]})
     let info = await ZenStaking.methods.getUserTokenInfo(accounts[0]).call({from: accounts[0]})
