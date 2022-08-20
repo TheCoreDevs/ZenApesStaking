@@ -262,9 +262,10 @@ describe('Staking Test', function () {
 
     let ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     // ids = [1, 2]
-    await ZenStaking.methods.stakeBatch([1,2,3]).send({from: accounts[0], gas: 1000000})
-    time.increase(1000)
+
     await ZenStaking.methods.stakeBatch([4,5,6]).send({from: accounts[0], gas: 1000000})
+    time.increase(1000)
+    await ZenStaking.methods.stakeBatch([1,2,3]).send({from: accounts[0], gas: 1000000})
 
 
     // await ZenStaking.methods.getUserTokenInfo(accounts[0]).call({from: accounts[0]})
