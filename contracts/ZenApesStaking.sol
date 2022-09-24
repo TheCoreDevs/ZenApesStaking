@@ -43,6 +43,8 @@ contract ZenStakingV1 {
         _;
     }
 
+    event OwnershipTransfer(address oldOwner, address newOwner);
+
     constructor (
         uint yieldAmountPerDay,
         uint40 requiredStakeTimeInSeconds, 
@@ -54,6 +56,12 @@ contract ZenStakingV1 {
         yieldPerDay = yieldAmountPerDay;
         _requiredStakeTime = requiredStakeTimeInSeconds;
         owner = msg.sender;
+    }
+
+    function transferOwnership(address newOwner) external onlyOwner {
+        address oldOwner = owner;
+        owner = newOwner;
+        emit OwnershipTransfer(oldOwner, newOwner);
     }
 
     function setYieldPerDay(uint amount) external onlyOwner {
