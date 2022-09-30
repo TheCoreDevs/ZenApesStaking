@@ -233,14 +233,22 @@ contract ZenStakingV1 {
         return (stakedTokens[id].stakingTimestamp, stakedTokens[id].lastClaimTimestamp, stakedTokens[id].tokenOwner);
     }
 
-    function getUserTokenInfo(address user) external view returns(uint[] memory stakingTimestamp, uint[] memory lastClaimTimestamp, uint[] memory tokenIds) {
+    function getUserTokenInfo(address user) external view returns(
+        uint[] memory stakingTimestamp,
+        uint[] memory lastClaimTimestamp,
+        uint[] memory tokenIds,
+        uint[] memory claimableAmount,
+        uint totalClaimableAmount
+    ) {
         uint x;
+        uint ca;
         uint stakedAmount = stakedTokensAmount[user];
         StakedToken memory st;
 
         stakingTimestamp = new uint[](stakedAmount);
         lastClaimTimestamp = new uint[](stakedAmount);
         tokenIds = new uint[](stakedAmount);
+        claimableAmount = new uint[](stakedAmount);
 
         for(uint i = 1; i < 5001;) {
             st = stakedTokens[uint16(i)];
@@ -248,6 +256,9 @@ contract ZenStakingV1 {
                 stakingTimestamp[x] = st.stakingTimestamp;
                 lastClaimTimestamp[x] = st.lastClaimTimestamp;
                 tokenIds[x] = i;
+                ca = _getClaimableAmount(st);
+                claimableAmount[x] = ca;
+                totalClaimableAmount += ca;
                 unchecked { ++x; }
             }
             unchecked { ++i; }
