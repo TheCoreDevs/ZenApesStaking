@@ -151,6 +151,23 @@ contract ZenStakingV1 {
         }
     }
 
+    function _getClaimableAmountView(StakedToken memory tokenInfo) private view returns(uint claimAmount) {
+
+        if (tokenInfo.lastClaimTimestamp == 0) {
+            uint timeStaked;
+            unchecked { timeStaked = block.timestamp - tokenInfo.stakingTimestamp; }
+            uint requiredStakeTime = _requiredStakeTime;
+
+            if (timeStaked >= requiredStakeTime) { return 0; }
+            claimAmount = ((timeStaked - requiredStakeTime) / 86400) * yieldPerDay ;
+        } else {
+            uint secondsSinceLastClaim;
+            unchecked { secondsSinceLastClaim = block.timestamp - tokenInfo.lastClaimTimestamp; }
+            if (secondsSinceLastClaim > 86399) { return 0; }
+
+            claimAmount = (secondsSinceLastClaim / 86400) * yieldPerDay ;
+        }
+    }
 
     function stake(uint tokenId) external {
         require(zenApesContract.ownerOf(tokenId) == msg.sender);
@@ -256,7 +273,7 @@ contract ZenStakingV1 {
                 stakingTimestamp[x] = st.stakingTimestamp;
                 lastClaimTimestamp[x] = st.lastClaimTimestamp;
                 tokenIds[x] = i;
-                ca = _getClaimableAmount(st);
+                ca = _getClaimableAmountView(st);
                 claimableAmount[x] = ca;
                 totalClaimableAmount += ca;
                 unchecked { ++x; }
