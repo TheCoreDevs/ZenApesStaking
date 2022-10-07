@@ -158,12 +158,12 @@ contract ZenStakingV1 {
             unchecked { timeStaked = block.timestamp - tokenInfo.stakingTimestamp; }
             uint requiredStakeTime = _requiredStakeTime;
 
-            if (timeStaked >= requiredStakeTime) { return 0; }
+            if (timeStaked <= requiredStakeTime) { return 0; }
             claimAmount = ((timeStaked - requiredStakeTime) / 86400) * yieldPerDay ;
         } else {
             uint secondsSinceLastClaim;
             unchecked { secondsSinceLastClaim = block.timestamp - tokenInfo.lastClaimTimestamp; }
-            if (secondsSinceLastClaim > 86399) { return 0; }
+            if (secondsSinceLastClaim < 86401) { return 0; }
 
             claimAmount = (secondsSinceLastClaim / 86400) * yieldPerDay ;
         }
